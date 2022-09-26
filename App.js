@@ -5,18 +5,34 @@ import Colors from "./utils/colors";
 import StartGameScreen from "./screens/StartGameScreen";
 import GameScreen from "./screens/GameScreen";
 import GameOver from "./screens/GameOver";
+import { useFonts, Inter_900Black } from "@expo-google-fonts/inter";
 
 export default function App() {
   const [userNumber, setUserNumber] = useState();
   const [gameOver, setGameOver] = useState(true);
+  const [guessRounds, setGuessRounds] = useState(0);
+
+  let [fontsLoaded] = useFonts({
+    Inter_900Black,
+  });
+
+  if (!fontsLoaded) {
+    return null;
+  }
 
   const startGameHandler = (pickedNumber) => {
     setUserNumber(pickedNumber);
     setGameOver(false);
   };
 
-  const gameOverHandler = () => {
+  const gameOverHandler = (numberOfRounds) => {
     setGameOver(true);
+    setGuessRounds(numberOfRounds);
+  };
+
+  const startNewGameHandler = () => {
+    setUserNumber(null);
+    setGuessRounds(0);
   };
 
   let screen = <StartGameScreen onPickNumber={startGameHandler} />;
@@ -28,7 +44,13 @@ export default function App() {
   }
 
   if (gameOver && userNumber) {
-    screen = <GameOver />;
+    screen = (
+      <GameOver
+        userNumber={userNumber}
+        roundsNumber={guessRounds}
+        onStartNewGame={startNewGameHandler}
+      />
+    );
   }
 
   return (
