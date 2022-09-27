@@ -1,15 +1,16 @@
+import { useState } from "react";
 import { StyleSheet, ImageBackground, SafeAreaView } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useState } from "react";
-import Colors from "./utils/colors";
+import { StatusBar } from "expo-status-bar";
+import { useFonts, Inter_900Black } from "@expo-google-fonts/inter";
 import StartGameScreen from "./screens/StartGameScreen";
 import GameScreen from "./screens/GameScreen";
-import GameOver from "./screens/GameOver";
-import { useFonts, Inter_900Black } from "@expo-google-fonts/inter";
+import GameOverScreen from "./screens/GameOverScreen";
+import Colors from "./utils/colors";
 
 export default function App() {
   const [userNumber, setUserNumber] = useState();
-  const [gameOver, setGameOver] = useState(true);
+  const [gameIsOver, setGameIsOver] = useState(true);
   const [guessRounds, setGuessRounds] = useState(0);
 
   let [fontsLoaded] = useFonts({
@@ -20,22 +21,22 @@ export default function App() {
     return null;
   }
 
-  const startGameHandler = (pickedNumber) => {
+  function pickedNumberHandler(pickedNumber) {
     setUserNumber(pickedNumber);
-    setGameOver(false);
-  };
+    setGameIsOver(false);
+  }
 
-  const gameOverHandler = (numberOfRounds) => {
-    setGameOver(true);
+  function gameOverHandler(numberOfRounds) {
+    setGameIsOver(true);
     setGuessRounds(numberOfRounds);
-  };
+  }
 
-  const startNewGameHandler = () => {
+  function startNewGameHandler() {
     setUserNumber(null);
     setGuessRounds(0);
-  };
+  }
 
-  let screen = <StartGameScreen onPickNumber={startGameHandler} />;
+  let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />;
 
   if (userNumber) {
     screen = (
@@ -43,9 +44,9 @@ export default function App() {
     );
   }
 
-  if (gameOver && userNumber) {
+  if (gameIsOver && userNumber) {
     screen = (
-      <GameOver
+      <GameOverScreen
         userNumber={userNumber}
         roundsNumber={guessRounds}
         onStartNewGame={startNewGameHandler}
@@ -54,19 +55,22 @@ export default function App() {
   }
 
   return (
-    <LinearGradient
-      colors={[Colors.primary700, Colors.accent500]}
-      style={styles.rootScreen}
-    >
-      <ImageBackground
-        source={require("./assets/images/bg.jpg")}
-        resizeMode="cover"
+    <>
+      <StatusBar style="light" />
+      <LinearGradient
+        colors={[Colors.primary700, Colors.accent500]}
         style={styles.rootScreen}
-        imageStyle={styles.backgroundImage}
       >
-        <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
-      </ImageBackground>
-    </LinearGradient>
+        <ImageBackground
+          source={require("./assets/images/bg.jpg")}
+          resizeMode="cover"
+          style={styles.rootScreen}
+          imageStyle={styles.backgroundImage}
+        >
+          <SafeAreaView style={styles.rootScreen}>{screen}</SafeAreaView>
+        </ImageBackground>
+      </LinearGradient>
+    </>
   );
 }
 
